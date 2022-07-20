@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option java_package = "grpc.newservice";
+option java_multiple_files = true;
+option java_outer_classname = "SmartSafetyImpl";
+
+service smartSafety {
+
+	//unary
+	rpc smartLock (lockRequest) returns (lockResponse) {}
+
+	//unary
+	rpc smartLight (lightRequest) returns (lightResponse){}
+
+}
+
+message lockRequest {
+	string lock = 1 ;
+
+}
+
+message lockResponse {
+	string unlock = 1 ;
+}
+
+message lightRequest {
+	string lightOn = 1;
+
+}
+
+message lightResponse{
+	string lightOff = 1;
+
+}
