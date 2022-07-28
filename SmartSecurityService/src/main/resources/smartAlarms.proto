@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option java_package = "grpc.smartalarms";
+option java_multiple_files = true;
+option java_outer_classname = "SmartAlarmsImpl";
+
+
+
+service smartAlarms {
+
+	// server stream
+	rpc smokeAlarm (smokeRequest) returns (stream smokeResponse) {}
+
+	//client stream
+	rpc alarmSystem (stream sensorRequest)returns (sensorResponse) {}
+
+}
+
+message smokeRequest {
+	string smoke = 1 ;
+}
+
+message smokeResponse {
+	string smokeDetect = 1;
+	int32 smokeLocations =2;
+}
+
+message sensorRequest {
+	string sensor =1;
+
+}
+
+message sensorResponse{
+	string sensorAlarm = 1;
+}
+
+

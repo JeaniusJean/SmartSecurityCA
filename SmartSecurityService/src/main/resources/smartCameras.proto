@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option java_package = "grpc.smartcameras";
+option java_multiple_files = true;
+option java_outer_classname = "SmartCamerasImpl";
+
+
+// Interface exported by the server.
+service smartCameras {
+
+  // bi-directional steam
+  rpc smartDoorbell (stream ringRequest) returns (stream ringResponse) {}
+  
+  //server stream
+  rpc IPCamera (videoRequest) returns (stream videoResponse) {}
+    
+}
+
+message ringRequest {
+  string ring = 1;
+}
+
+message ringResponse {
+  string respond = 1;
+}
+
+message videoRequest {
+	string video = 1;
+}
+
+message videoResponse {
+	string watchVideo = 1;
+}
