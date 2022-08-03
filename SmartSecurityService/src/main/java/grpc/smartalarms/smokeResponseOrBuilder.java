@@ -8,17 +8,12 @@ public interface smokeResponseOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string smokeDetect = 1;</code>
+   * <code>int32 latitude = 1;</code>
    */
-  java.lang.String getSmokeDetect();
-  /**
-   * <code>string smokeDetect = 1;</code>
-   */
-  com.google.protobuf.ByteString
-      getSmokeDetectBytes();
+  int getLatitude();
 
   /**
-   * <code>int32 smokeLocations = 2;</code>
+   * <code>int32 longtitude = 2;</code>
    */
-  int getSmokeLocations();
+  int getLongtitude();
 }

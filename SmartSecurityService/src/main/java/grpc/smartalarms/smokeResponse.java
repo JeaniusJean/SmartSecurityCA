@@ -16,8 +16,8 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private smokeResponse() {
-    smokeDetect_ = "";
-    smokeLocations_ = 0;
+    latitude_ = 0;
+    longtitude_ = 0;
   }
 
   @java.lang.Override
@@ -44,15 +44,14 @@ private static final long serialVersionUID = 0L;
           case 0:
             done = true;
             break;
-          case 10: {
-            java.lang.String s = input.readStringRequireUtf8();
+          case 8: {
 
-            smokeDetect_ = s;
+            latitude_ = input.readInt32();
             break;
           }
           case 16: {
 
-            smokeLocations_ = input.readInt32();
+            longtitude_ = input.readInt32();
             break;
           }
           default: {
@@ -87,47 +86,22 @@ private static final long serialVersionUID = 0L;
             grpc.smartalarms.smokeResponse.class, grpc.smartalarms.smokeResponse.Builder.class);
   }
 
-  public static final int SMOKEDETECT_FIELD_NUMBER = 1;
-  private volatile java.lang.Object smokeDetect_;
+  public static final int LATITUDE_FIELD_NUMBER = 1;
+  private int latitude_;
   /**
-   * <code>string smokeDetect = 1;</code>
+   * <code>int32 latitude = 1;</code>
    */
-  public java.lang.String getSmokeDetect() {
-    java.lang.Object ref = smokeDetect_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      smokeDetect_ = s;
-      return s;
-    }
-  }
-  /**
-   * <code>string smokeDetect = 1;</code>
-   */
-  public com.google.protobuf.ByteString
-      getSmokeDetectBytes() {
-    java.lang.Object ref = smokeDetect_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      smokeDetect_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
+  public int getLatitude() {
+    return latitude_;
   }
 
-  public static final int SMOKELOCATIONS_FIELD_NUMBER = 2;
-  private int smokeLocations_;
+  public static final int LONGTITUDE_FIELD_NUMBER = 2;
+  private int longtitude_;
   /**
-   * <code>int32 smokeLocations = 2;</code>
+   * <code>int32 longtitude = 2;</code>
    */
-  public int getSmokeLocations() {
-    return smokeLocations_;
+  public int getLongtitude() {
+    return longtitude_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -144,11 +118,11 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getSmokeDetectBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, smokeDetect_);
+    if (latitude_ != 0) {
+      output.writeInt32(1, latitude_);
     }
-    if (smokeLocations_ != 0) {
-      output.writeInt32(2, smokeLocations_);
+    if (longtitude_ != 0) {
+      output.writeInt32(2, longtitude_);
     }
     unknownFields.writeTo(output);
   }
@@ -159,12 +133,13 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getSmokeDetectBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, smokeDetect_);
-    }
-    if (smokeLocations_ != 0) {
+    if (latitude_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(2, smokeLocations_);
+        .computeInt32Size(1, latitude_);
+    }
+    if (longtitude_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(2, longtitude_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -182,10 +157,10 @@ private static final long serialVersionUID = 0L;
     grpc.smartalarms.smokeResponse other = (grpc.smartalarms.smokeResponse) obj;
 
     boolean result = true;
-    result = result && getSmokeDetect()
-        .equals(other.getSmokeDetect());
-    result = result && (getSmokeLocations()
-        == other.getSmokeLocations());
+    result = result && (getLatitude()
+        == other.getLatitude());
+    result = result && (getLongtitude()
+        == other.getLongtitude());
     result = result && unknownFields.equals(other.unknownFields);
     return result;
   }
@@ -197,10 +172,10 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    hash = (37 * hash) + SMOKEDETECT_FIELD_NUMBER;
-    hash = (53 * hash) + getSmokeDetect().hashCode();
-    hash = (37 * hash) + SMOKELOCATIONS_FIELD_NUMBER;
-    hash = (53 * hash) + getSmokeLocations();
+    hash = (37 * hash) + LATITUDE_FIELD_NUMBER;
+    hash = (53 * hash) + getLatitude();
+    hash = (37 * hash) + LONGTITUDE_FIELD_NUMBER;
+    hash = (53 * hash) + getLongtitude();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -334,9 +309,9 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
-      smokeDetect_ = "";
+      latitude_ = 0;
 
-      smokeLocations_ = 0;
+      longtitude_ = 0;
 
       return this;
     }
@@ -364,8 +339,8 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public grpc.smartalarms.smokeResponse buildPartial() {
       grpc.smartalarms.smokeResponse result = new grpc.smartalarms.smokeResponse(this);
-      result.smokeDetect_ = smokeDetect_;
-      result.smokeLocations_ = smokeLocations_;
+      result.latitude_ = latitude_;
+      result.longtitude_ = longtitude_;
       onBuilt();
       return result;
     }
@@ -414,12 +389,11 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(grpc.smartalarms.smokeResponse other) {
       if (other == grpc.smartalarms.smokeResponse.getDefaultInstance()) return this;
-      if (!other.getSmokeDetect().isEmpty()) {
-        smokeDetect_ = other.smokeDetect_;
-        onChanged();
+      if (other.getLatitude() != 0) {
+        setLatitude(other.getLatitude());
       }
-      if (other.getSmokeLocations() != 0) {
-        setSmokeLocations(other.getSmokeLocations());
+      if (other.getLongtitude() != 0) {
+        setLongtitude(other.getLongtitude());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -450,97 +424,54 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private java.lang.Object smokeDetect_ = "";
+    private int latitude_ ;
     /**
-     * <code>string smokeDetect = 1;</code>
+     * <code>int32 latitude = 1;</code>
      */
-    public java.lang.String getSmokeDetect() {
-      java.lang.Object ref = smokeDetect_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        smokeDetect_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
-      }
+    public int getLatitude() {
+      return latitude_;
     }
     /**
-     * <code>string smokeDetect = 1;</code>
+     * <code>int32 latitude = 1;</code>
      */
-    public com.google.protobuf.ByteString
-        getSmokeDetectBytes() {
-      java.lang.Object ref = smokeDetect_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        smokeDetect_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     * <code>string smokeDetect = 1;</code>
-     */
-    public Builder setSmokeDetect(
-        java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
-      smokeDetect_ = value;
+    public Builder setLatitude(int value) {
+      
+      latitude_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>string smokeDetect = 1;</code>
+     * <code>int32 latitude = 1;</code>
      */
-    public Builder clearSmokeDetect() {
+    public Builder clearLatitude() {
       
-      smokeDetect_ = getDefaultInstance().getSmokeDetect();
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>string smokeDetect = 1;</code>
-     */
-    public Builder setSmokeDetectBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
-      smokeDetect_ = value;
+      latitude_ = 0;
       onChanged();
       return this;
     }
 
-    private int smokeLocations_ ;
+    private int longtitude_ ;
     /**
-     * <code>int32 smokeLocations = 2;</code>
+     * <code>int32 longtitude = 2;</code>
      */
-    public int getSmokeLocations() {
-      return smokeLocations_;
+    public int getLongtitude() {
+      return longtitude_;
     }
     /**
-     * <code>int32 smokeLocations = 2;</code>
+     * <code>int32 longtitude = 2;</code>
      */
-    public Builder setSmokeLocations(int value) {
+    public Builder setLongtitude(int value) {
       
-      smokeLocations_ = value;
+      longtitude_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>int32 smokeLocations = 2;</code>
+     * <code>int32 longtitude = 2;</code>
      */
-    public Builder clearSmokeLocations() {
+    public Builder clearLongtitude() {
       
-      smokeLocations_ = 0;
+      longtitude_ = 0;
       onChanged();
       return this;
     }

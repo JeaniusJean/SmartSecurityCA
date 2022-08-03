@@ -11,8 +11,8 @@ service smartCameras {
   // bi-directional steam
   rpc smartDoorbell (stream ringRequest) returns (stream ringResponse) {}
   
-  //server stream
-  rpc IPCamera (videoRequest) returns (stream videoResponse) {}
+  // bi-directional stream
+  rpc IPCamera (stream videoRequest) returns (stream videoResponse) {}
     
 }
 

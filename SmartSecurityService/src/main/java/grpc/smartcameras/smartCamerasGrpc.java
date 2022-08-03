@@ -69,7 +69,7 @@ public final class smartCamerasGrpc {
       fullMethodName = SERVICE_NAME + '/' + "IPCamera",
       requestType = grpc.smartcameras.videoRequest.class,
       responseType = grpc.smartcameras.videoResponse.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+      methodType = io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
   public static io.grpc.MethodDescriptor<grpc.smartcameras.videoRequest,
       grpc.smartcameras.videoResponse> getIPCameraMethod() {
     io.grpc.MethodDescriptor<grpc.smartcameras.videoRequest, grpc.smartcameras.videoResponse> getIPCameraMethod;
@@ -78,7 +78,7 @@ public final class smartCamerasGrpc {
         if ((getIPCameraMethod = smartCamerasGrpc.getIPCameraMethod) == null) {
           smartCamerasGrpc.getIPCameraMethod = getIPCameraMethod = 
               io.grpc.MethodDescriptor.<grpc.smartcameras.videoRequest, grpc.smartcameras.videoResponse>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+              .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
               .setFullMethodName(generateFullMethodName(
                   "smartCameras", "IPCamera"))
               .setSampledToLocalTracing(true)
@@ -136,12 +136,12 @@ public final class smartCamerasGrpc {
 
     /**
      * <pre>
-     *server stream
+     * bi-directional stream
      * </pre>
      */
-    public void iPCamera(grpc.smartcameras.videoRequest request,
+    public io.grpc.stub.StreamObserver<grpc.smartcameras.videoRequest> iPCamera(
         io.grpc.stub.StreamObserver<grpc.smartcameras.videoResponse> responseObserver) {
-      asyncUnimplementedUnaryCall(getIPCameraMethod(), responseObserver);
+      return asyncUnimplementedStreamingCall(getIPCameraMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
@@ -155,7 +155,7 @@ public final class smartCamerasGrpc {
                   this, METHODID_SMART_DOORBELL)))
           .addMethod(
             getIPCameraMethod(),
-            asyncServerStreamingCall(
+            asyncBidiStreamingCall(
               new MethodHandlers<
                 grpc.smartcameras.videoRequest,
                 grpc.smartcameras.videoResponse>(
@@ -198,13 +198,13 @@ public final class smartCamerasGrpc {
 
     /**
      * <pre>
-     *server stream
+     * bi-directional stream
      * </pre>
      */
-    public void iPCamera(grpc.smartcameras.videoRequest request,
+    public io.grpc.stub.StreamObserver<grpc.smartcameras.videoRequest> iPCamera(
         io.grpc.stub.StreamObserver<grpc.smartcameras.videoResponse> responseObserver) {
-      asyncServerStreamingCall(
-          getChannel().newCall(getIPCameraMethod(), getCallOptions()), request, responseObserver);
+      return asyncBidiStreamingCall(
+          getChannel().newCall(getIPCameraMethod(), getCallOptions()), responseObserver);
     }
   }
 
@@ -227,17 +227,6 @@ public final class smartCamerasGrpc {
     protected smartCamerasBlockingStub build(io.grpc.Channel channel,
         io.grpc.CallOptions callOptions) {
       return new smartCamerasBlockingStub(channel, callOptions);
-    }
-
-    /**
-     * <pre>
-     *server stream
-     * </pre>
-     */
-    public java.util.Iterator<grpc.smartcameras.videoResponse> iPCamera(
-        grpc.smartcameras.videoRequest request) {
-      return blockingServerStreamingCall(
-          getChannel(), getIPCameraMethod(), getCallOptions(), request);
     }
   }
 
@@ -263,8 +252,8 @@ public final class smartCamerasGrpc {
     }
   }
 
-  private static final int METHODID_IPCAMERA = 0;
-  private static final int METHODID_SMART_DOORBELL = 1;
+  private static final int METHODID_SMART_DOORBELL = 0;
+  private static final int METHODID_IPCAMERA = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -283,10 +272,6 @@ public final class smartCamerasGrpc {
     @java.lang.SuppressWarnings("unchecked")
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
-        case METHODID_IPCAMERA:
-          serviceImpl.iPCamera((grpc.smartcameras.videoRequest) request,
-              (io.grpc.stub.StreamObserver<grpc.smartcameras.videoResponse>) responseObserver);
-          break;
         default:
           throw new AssertionError();
       }
@@ -300,6 +285,9 @@ public final class smartCamerasGrpc {
         case METHODID_SMART_DOORBELL:
           return (io.grpc.stub.StreamObserver<Req>) serviceImpl.smartDoorbell(
               (io.grpc.stub.StreamObserver<grpc.smartcameras.ringResponse>) responseObserver);
+        case METHODID_IPCAMERA:
+          return (io.grpc.stub.StreamObserver<Req>) serviceImpl.iPCamera(
+              (io.grpc.stub.StreamObserver<grpc.smartcameras.videoResponse>) responseObserver);
         default:
           throw new AssertionError();
       }

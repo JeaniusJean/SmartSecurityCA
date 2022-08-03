@@ -44,14 +44,14 @@ public final class SmartAlarmsImpl {
   static {
     java.lang.String[] descriptorData = {
       "\n\021smartAlarms.proto\"\035\n\014smokeRequest\022\r\n\005s" +
-      "moke\030\001 \001(\t\"<\n\rsmokeResponse\022\023\n\013smokeDete" +
-      "ct\030\001 \001(\t\022\026\n\016smokeLocations\030\002 \001(\005\"\037\n\rsens" +
-      "orRequest\022\016\n\006sensor\030\001 \001(\t\"%\n\016sensorRespo" +
-      "nse\022\023\n\013sensorAlarm\030\001 \001(\t2r\n\013smartAlarms\022" +
-      "/\n\nsmokeAlarm\022\r.smokeRequest\032\016.smokeResp" +
-      "onse\"\0000\001\0222\n\013alarmSystem\022\016.sensorRequest\032" +
-      "\017.sensorResponse\"\000(\001B%\n\020grpc.smartalarms" +
-      "B\017SmartAlarmsImplP\001b\006proto3"
+      "moke\030\001 \001(\t\"5\n\rsmokeResponse\022\020\n\010latitude\030" +
+      "\001 \001(\005\022\022\n\nlongtitude\030\002 \001(\005\"\037\n\rsensorReque" +
+      "st\022\016\n\006sensor\030\001 \001(\t\"%\n\016sensorResponse\022\023\n\013" +
+      "sensorAlarm\030\001 \001(\t2r\n\013smartAlarms\022/\n\nsmok" +
+      "eAlarm\022\r.smokeRequest\032\016.smokeResponse\"\0000" +
+      "\001\0222\n\013alarmSystem\022\016.sensorRequest\032\017.senso" +
+      "rResponse\"\000(\001B%\n\020grpc.smartalarmsB\017Smart" +
+      "AlarmsImplP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -76,7 +76,7 @@ public final class SmartAlarmsImpl {
     internal_static_smokeResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_smokeResponse_descriptor,
-        new java.lang.String[] { "SmokeDetect", "SmokeLocations", });
+        new java.lang.String[] { "Latitude", "Longtitude", });
     internal_static_sensorRequest_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_sensorRequest_fieldAccessorTable = new

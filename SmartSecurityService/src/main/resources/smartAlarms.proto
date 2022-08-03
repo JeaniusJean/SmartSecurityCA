@@ -21,8 +21,8 @@ message smokeRequest {
 }
 
 message smokeResponse {
-	string smokeDetect = 1;
-	int32 smokeLocations =2;
+	int32 latitude = 1;
+	int32 longtitude =2;
 }
 
 message sensorRequest {

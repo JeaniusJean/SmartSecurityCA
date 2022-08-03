@@ -8,7 +8,12 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 
+/*server stream
+	rpc smokeAlarm (smokeRequest) returns (stream smokeResponse) {}
 
+	//client stream
+	rpc alarmSystem (stream sensorRequest)returns (sensorResponse) {}
+*/
 
 public class smartAlarmsServer extends smartAlarmsImplBase {
 	
@@ -20,7 +25,7 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 		
 		smartAlarmsServer service = new smartAlarmsServer();
 		
-		 int port = 50056;
+		 int port = 50052;
 		    
 		   
 
@@ -37,26 +42,70 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 		
 
 }	
-	//server stream
-	 @Override
-	 public void smokeAlarm (smokeRequest request, StreamObserver<smokeResponse> responseObserver) {
+	@Override
+	public void smokeAlarm(smokeRequest request, StreamObserver<smokeResponse> responseObserver) {
+		// TODO Auto-generated method stub
+		super.smokeAlarm(request, responseObserver);
+	
 		 System.out.println("receiving smokeAlarm");
 		 
-		// Retrieve the value from the request of the client and convert it to array
-		 char[]characters = request.getSmoke().toCharArray();
-		 
-		// LOGIC of THE METHOD 
-			// NOTE: YOU MAY NEED TO MODIFY THIS LOGIC HERE.
-		 System.out.println(characters.length);
-		 
-		 for(char c: characters) {			
-			// Preparing and sending the reply for the client. Here, response is build and with the value (c) computed by above logic.
-			 // Here, a stream of response is sent using the for loop.
-			 responseObserver.onNext(smokeResponse.newBuilder().setSmokeDetect(Character.toString(c)).build());
-		 }
-		 
-		 responseObserver.onCompleted();
+		 int length = request.getSmoke().length();
+			
+			//preparing the response message
+		 	smokeResponse reply = smokeResponse.newBuilder().setLatitude(length).setLongtitude(length).build();
+		
+
+			responseObserver.onNext( reply ); 
+			
+
+			responseObserver.onCompleted();
+
+		}
+	
+	
+	@Override
+	public StreamObserver<sensorRequest> alarmSystem(StreamObserver<sensorResponse> responseObserver) {
+		return new StreamObserver<sensorRequest>() {
+			
+			int length = 0;
+			
+			// For each message in the stream, get one stream at a time.
+			// NOTE: YOU MAY MODIFY THE LOGIC OF onNext, onError, onCompleted BASED ON YOUR PROJECT.
+			@Override
+			public void onNext(sensorRequest value) {
+				// Here, in this example we compute the value of string length for each message in the stream. 
+				System.out.println("receive -> " + value.getSensor());
+				// Keep on adding all the length values to compute the total length of strings sent by the client in the stream 
+				length += value.getSensor().length();
+				
+			}
+
+			@Override
+			public void onError(Throwable t) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			// Once the complete stream is received this logic will be executed.
+			@Override
+			public void onCompleted() {
+				// Preparing and sending the reply for the client. Here, response is build and with the value (length) computed by above logic.
+				 // Here, response is sent once the client is done with sending the stream.
+				sensorResponse res = sensorResponse.newBuilder().build();
+		          responseObserver.onNext(res);
+		          responseObserver.onCompleted();
+			}
+
+			
+			
+			
+		};
 	}
 
 	
-}
+	}
+	 
+	 
+
+	
+

@@ -46,11 +46,11 @@ public final class SmartCamerasImpl {
       "\n\022smartCameras.proto\"\033\n\013ringRequest\022\014\n\004r" +
       "ing\030\001 \001(\t\"\037\n\014ringResponse\022\017\n\007respond\030\001 \001" +
       "(\t\"\035\n\014videoRequest\022\r\n\005video\030\001 \001(\t\"#\n\rvid" +
-      "eoResponse\022\022\n\nwatchVideo\030\001 \001(\t2q\n\014smartC" +
+      "eoResponse\022\022\n\nwatchVideo\030\001 \001(\t2s\n\014smartC" +
       "ameras\0222\n\rsmartDoorbell\022\014.ringRequest\032\r." +
-      "ringResponse\"\000(\0010\001\022-\n\010IPCamera\022\r.videoRe" +
-      "quest\032\016.videoResponse\"\0000\001B\'\n\021grpc.smartc" +
-      "amerasB\020SmartCamerasImplP\001b\006proto3"
+      "ringResponse\"\000(\0010\001\022/\n\010IPCamera\022\r.videoRe" +
+      "quest\032\016.videoResponse\"\000(\0010\001B\'\n\021grpc.smar" +
+      "tcamerasB\020SmartCamerasImplP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
