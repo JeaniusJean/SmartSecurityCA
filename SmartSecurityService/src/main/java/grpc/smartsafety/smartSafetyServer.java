@@ -22,7 +22,7 @@ public class smartSafetyServer {
 	private void start() throws IOException, InterruptedException {
 		System.out.println("Starting new GRPC server");
 		
-		int port = 50051;
+		int port = 50061;
 		//smartSafety
 		server = ServerBuilder.forPort(port).addService(new SmartSafetyImpl()).build().start();
 		
@@ -44,6 +44,7 @@ public class smartSafetyServer {
 			responseBuilder.setUnlock(lock);
 			
 			responseObserver.onNext(responseBuilder.build());
+			responseObserver.onCompleted();	
 			
 		}
 		
@@ -55,7 +56,7 @@ public class smartSafetyServer {
 			responseBuilder.setLightOff(lightOn);
 			
 			responseObserver.onNext(responseBuilder.build());
-					
+			responseObserver.onCompleted();				
 		}
 		
 	}
