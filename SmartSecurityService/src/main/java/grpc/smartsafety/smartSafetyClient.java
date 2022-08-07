@@ -1,33 +1,67 @@
 package grpc.smartsafety;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
-import grpc.smartsafety.smartSafetyGrpc.smartSafetyBlockingStub;
+import grpc.smartsafety.smartSafetyGrpc.smartSafetyStub;
+
+//required grpc package for the client side
+
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
+
 public class smartSafetyClient {
 
-	public static void main(String[] args) throws InterruptedException {
-		//build a channel to connect the client to the server
-		int port = 50061;
-		String host = "localhost";
+	
+		// First we create a logger to show client side logs in the console. logger instance will be used to log different events at the client console.
+		// This is optional. Could be used if needed.
+		private static  Logger logger = Logger.getLogger(smartSafetyClient.class.getName());
+
+		// Creating stubs for establishing the connection with server.
+		// Blocking stub
+		private static smartSafetyGrpc.smartSafetyBlockingStub blockingStub;
+		// Async stub
+		private static smartSafetyStub asyncStub;
 		
-		ManagedChannel newChannel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
+		// The main method will have the logic for client.
+		public static void main(String[] args) throws InterruptedException{
+		// First a channel is being created to the server from client. Here, we provide the server name (localhost) and port (50055).
+			// As it is a local demo of GRPC, we can have non-secured channel (usePlaintext).
+			ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50061).usePlaintext().build();
+
+			//stubs -- generate from proto
+			blockingStub = smartSafetyGrpc.newBlockingStub(channel);
+			asyncStub = smartSafetyGrpc.newStub(channel);
+
+			// Unary RPC call
+			smartLock();
+			smartLight();
+			
+
+			// Closing the channel once message has been passed.		
+			channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+
+		}
 		
-		//build message
-		lockRequest cString = lockRequest.newBuilder().setLock("test").build();
+		//unary rpc
+		public static void smartLock() {
+			// First creating a request message. Here, the message contains a string in setVal
+			lockRequest req = lockRequest.newBuilder().setLock("Hello lock").build();
+			//  Calling a remote RPC method using blocking stub defined in main method. req is the message we want to pass.
+			lockResponse response = blockingStub.smartLock(req);
+
+			//response contains the output from the server side. Here, we are printing the value contained by response. 
+			System.out.println(response.getUnlock());
+		}
 		
-		//create a stub local representation of remote service
-		smartSafetyBlockingStub bstub = smartSafetyGrpc.newBlockingStub(newChannel);
-				
-		lockResponse response = bstub.smartLock(cString);
+		public static void  smartLight() {
+			lightRequest req = lightRequest.newBuilder().setLightOn("Hello light").build();
+			lightResponse response = blockingStub.smartLight(req);
+			System.out.println(response.getLightOff());
+			
+		}
 		
-		System.out.println("This is the client: " + response.getUnlock());
-		
-		newChannel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
-		
-		
-	}
+
 
 }

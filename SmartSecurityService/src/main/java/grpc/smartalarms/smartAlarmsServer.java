@@ -25,7 +25,7 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 		
 		smartAlarmsServer service = new smartAlarmsServer();
 		
-		 int port = 50052;
+		 int port = 50062;
 		    
 		   
 
