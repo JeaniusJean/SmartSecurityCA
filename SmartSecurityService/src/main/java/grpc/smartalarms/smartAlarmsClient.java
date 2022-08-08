@@ -31,7 +31,7 @@ public class smartAlarmsClient {
 	smokeAlarmBlocking();
 	
 	
-	channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);;
+	channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
 	
 			
 	}

@@ -39,7 +39,8 @@ public class smartSafetyClient {
 			smartLight();
 			
 
-			// Closing the channel once message has been passed.		
+			// Closing the channel once message has been passed.
+			System.out.println("shutting down");
 			channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
 
 		}

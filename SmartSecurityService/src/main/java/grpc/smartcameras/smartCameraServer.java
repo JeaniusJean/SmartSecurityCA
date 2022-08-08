@@ -15,7 +15,7 @@ public class smartCameraServer extends smartCamerasImplBase{
 	
 	 public static void main(String[] args) throws IOException, InterruptedException {
 		 smartCameraServer smartcameraserver = new smartCameraServer();
-		 int port = 50053;
+		 int port = 50063;
 		 
 		 Server server = ServerBuilder.forPort(port) 
 			        .addService(smartcameraserver) 
