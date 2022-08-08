@@ -16,7 +16,7 @@ import io.grpc.stub.StreamObserver;
 public class smartCamerasClient {
 
 		private static  Logger logger = Logger.getLogger(smartCamerasClient.class.getName());
-		private static smartCamerasGrpc.smartCamerasBlockingStub blockingStub;
+		//private static smartCamerasGrpc.smartCamerasBlockingStub blockingStub;
 		private static smartCamerasGrpc.smartCamerasStub asyncStub;
 		
 		public static void main(String[] args) throws Exception {
@@ -25,7 +25,7 @@ public class smartCamerasClient {
 			ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50063).usePlaintext().build();
 
 			//stubs -- generate from proto
-			blockingStub = smartCamerasGrpc.newBlockingStub(channel);
+			//blockingStub = smartCamerasGrpc.newBlockingStub(channel);
 			asyncStub = smartCamerasGrpc.newStub(channel);
 
 			//bidirectional streaming

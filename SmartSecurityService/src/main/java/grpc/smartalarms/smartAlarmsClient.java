@@ -28,7 +28,7 @@ public class smartAlarmsClient {
 	
 	alarmSystem();
 	smokeAlarmAsync();
-	smokeAlarmBlocking();
+	//smokeAlarmBlocking();
 	
 	
 	channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
@@ -91,7 +91,8 @@ public class smartAlarmsClient {
 		
 			
 	
-
+	// server stream
+	// rpc smokeAlarm (smokeRequest) returns (stream smokeResponse) {}
 	private static void smokeAlarmAsync() {
 		smokeRequest request = smokeRequest.newBuilder().setSmoke("message 1 - introduction").build();
 		
@@ -131,7 +132,7 @@ public class smartAlarmsClient {
 	
 
 	//blocking server-streaming
-	public static void smokeAlarmBlocking() {
+	/*public static void smokeAlarmBlocking() {
 		smokeRequest request = smokeRequest.newBuilder().setSmoke("message 1 - introduction").build();
 		// as this call is blocking. The client will not proceed until all the messages in stream has been received. 
 				try {
@@ -149,6 +150,7 @@ public class smartAlarmsClient {
 				}
 				
 			}
+			*/
 		
 	}
 		
