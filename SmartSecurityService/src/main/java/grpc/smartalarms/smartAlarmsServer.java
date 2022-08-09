@@ -1,7 +1,7 @@
 package grpc.smartalarms;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
+
 import java.util.logging.Logger;
 
 import javax.jmdns.JmDNS;
@@ -44,9 +44,7 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 		    		    
 		    // Server will be running until externally terminated.
 		    server.awaitTermination();
-		    
-		    
-		
+		   	
 
 }	
 
@@ -59,7 +57,7 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
             String service_type = "_smartAlarmsServer._tcp.local.";
             String service_name = "smart Alarms Server";
             int service_port = 50062;
-            String service_description = "Perform safety operations";
+            String service_description = "Perform Alarms operations";
             
             // Register a service
             ServiceInfo serviceInfo = ServiceInfo.create(service_type, service_name, service_port, service_description);

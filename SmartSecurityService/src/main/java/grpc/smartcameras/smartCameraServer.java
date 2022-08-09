@@ -1,8 +1,11 @@
 package grpc.smartcameras;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.logging.Logger;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
 
 import grpc.smartcameras.smartCamerasGrpc.smartCamerasImplBase;
 import io.grpc.Server;
@@ -14,7 +17,11 @@ public class smartCameraServer extends smartCamerasImplBase{
 	private static final Logger logger = Logger.getLogger(smartCameraServer.class.getName());
 	
 	 public static void main(String[] args) throws IOException, InterruptedException {
+		 
+		 
 		 smartCameraServer smartcameraserver = new smartCameraServer();
+		 smartcameraserver.registerService();
+		 
 		 int port = 50063;
 		 
 		 Server server = ServerBuilder.forPort(port) 
@@ -25,7 +32,8 @@ public class smartCameraServer extends smartCamerasImplBase{
 		 logger.info("Server started, listening on " + port);
 		 server.awaitTermination();
 	 }
-	 // bi-directional steam
+	 
+	// bi-directional steam
 	  //rpc smartDoorbell (stream ringRequest) returns (stream ringResponse) {}
 	  
 	 
@@ -41,29 +49,53 @@ public class smartCameraServer extends smartCamerasImplBase{
 	            ringResponse reply = ringResponse.newBuilder().setRespond(input1.toString()).build();
 	      
 	            responseObserver.onNext(reply);
-			
 		}
 
 		@Override
 		public void onError(Throwable t) {
 			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		public void onCompleted() {
 			 responseObserver.onCompleted();
-			
 		}
 		
 	};
-	
-	
-		
 		
 	}
+	
+	private void registerService() {
+		 
+		try {
+            // Create a JmDNS instance
+            JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
+            
+            String service_type = "_smartCameraServer._tcp.local.";
+            String service_name = "smart Camera Server";
+            int service_port = 50063;
+            String service_description = "Perform camera operations";
+            
+            // Register a service
+            ServiceInfo serviceInfo = ServiceInfo.create(service_type, service_name, service_port, service_description);
+            jmdns.registerService(serviceInfo);
+            
+            System.out.printf("registering service with type %s and name %s \n", service_type, service_name);
+            
+            // Wait a bit
+            Thread.sleep(1000);
 
+            // Unregister all services
+            //jmdns.unregisterAllServices();
 
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        } catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public StreamObserver<videoRequest> iPCamera(StreamObserver<videoResponse> responseObserver) {
 		return new StreamObserver<videoRequest>() {
@@ -94,13 +126,11 @@ public class smartCameraServer extends smartCamerasImplBase{
 		};
 		
 	}
+	
+  
 
 
-	
-	
-	
-	 	 
-	}
+}
 		 
 		
 

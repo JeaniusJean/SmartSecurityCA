@@ -3,7 +3,7 @@ package grpc.smartalarms;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Iterator;
+
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -36,21 +36,73 @@ public class smartAlarmsClient {
 					
 	ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50062).usePlaintext().build();
 	
-	
 	asyncStub = smartAlarmsGrpc.newStub(channel);
-	
 	
 	alarmSystem();
 	smokeAlarm();
 
-	
-	
-	channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
-	
-			
+	channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);			
 	}
 	
+	private void discoverAlarms(String service_type) {
+		
+		try {
+			// Create a JmDNS instance
+			JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
 
+				
+			jmdns.addServiceListener(service_type, new ServiceListener() {
+				
+				@Override
+				public void serviceResolved(ServiceEvent event) {
+					System.out.println("Service resolved: " + event.getInfo());
+
+					smartAlarmsInfo = event.getInfo();
+
+					int port = smartAlarmsInfo.getPort();
+					
+					System.out.println("resolving " + service_type + " with properties ...");
+					System.out.println("\t port: " + port);
+					System.out.println("\t type:"+ event.getType());
+					System.out.println("\t name: " + event.getName());
+					System.out.println("\t description/properties: " + smartAlarmsInfo.getNiceTextString());
+					//System.out.println("\t host: " + smartAlarmsInfo.getHostAddresses()[0]);
+				
+					
+				}
+	
+				
+				@Override
+				public void serviceRemoved(ServiceEvent event) {
+					System.out.println("Service removed: " + event.getInfo());
+
+					
+				}
+				
+				@Override
+				public void serviceAdded(ServiceEvent event) {
+					System.out.println("Service added: " + event.getInfo());
+
+					
+				}
+			});
+			
+			// Wait a bit
+			Thread.sleep(2000);
+			
+			jmdns.close();
+
+		} catch (UnknownHostException e) {
+			System.out.println(e.getMessage());
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	 }
 
 
 	private static void alarmSystem(){
@@ -145,65 +197,10 @@ public class smartAlarmsClient {
 		}
 
 	
-	private void discoverAlarms(String service_type) {
 	
-		try {
-			// Create a JmDNS instance
-			JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
 
-				
-			jmdns.addServiceListener(service_type, new ServiceListener() {
-				
-				@Override
-				public void serviceResolved(ServiceEvent event) {
-					System.out.println("Service resolved: " + event.getInfo());
 
-					smartAlarmsInfo = event.getInfo();
 
-					int port = smartAlarmsInfo.getPort();
-					
-					System.out.println("resolving " + service_type + " with properties ...");
-					System.out.println("\t port: " + port);
-					System.out.println("\t type:"+ event.getType());
-					System.out.println("\t name: " + event.getName());
-					System.out.println("\t description/properties: " + smartAlarmsInfo.getNiceTextString());
-					//System.out.println("\t host: " + smartAlarmsInfo.getHostAddresses()[0]);
-				
-					
-				}
-	
-				
-				@Override
-				public void serviceRemoved(ServiceEvent event) {
-					System.out.println("Service removed: " + event.getInfo());
-
-					
-				}
-				
-				@Override
-				public void serviceAdded(ServiceEvent event) {
-					System.out.println("Service added: " + event.getInfo());
-
-					
-				}
-			});
-			
-			// Wait a bit
-			Thread.sleep(2000);
-			
-			jmdns.close();
-
-		} catch (UnknownHostException e) {
-			System.out.println(e.getMessage());
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-	 }
 }
 
 	
