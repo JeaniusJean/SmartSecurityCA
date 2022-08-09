@@ -1,7 +1,17 @@
 package grpc.smartsafety;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceEvent;
+import javax.jmdns.ServiceInfo;
+import javax.jmdns.ServiceListener;
+
+
 
 import grpc.smartsafety.smartSafetyGrpc.smartSafetyStub;
 
@@ -14,25 +24,31 @@ import io.grpc.ManagedChannelBuilder;
 public class smartSafetyClient {
 
 	
-		// First we create a logger to show client side logs in the console. logger instance will be used to log different events at the client console.
-		// This is optional. Could be used if needed.
+		// logger to show client side logs in the console
 		private static  Logger logger = Logger.getLogger(smartSafetyClient.class.getName());
 
-		// Creating stubs for establishing the connection with server.
+
 		// Blocking stub
 		private static smartSafetyGrpc.smartSafetyBlockingStub blockingStub;
 		// Async stub
-		private static smartSafetyStub asyncStub;
+		//private static smartSafetyStub asyncStub;
 		
-		// The main method will have the logic for client.
+		private ServiceInfo smartSafetyInfo;
+		
+		
 		public static void main(String[] args) throws InterruptedException{
-		// First a channel is being created to the server from client. Here, we provide the server name (localhost) and port (50055).
-			// As it is a local demo of GRPC, we can have non-secured channel (usePlaintext).
+			
+			// Discover the jmDNS service
+			smartSafetyClient smartSafety = new smartSafetyClient();
+			String service_type = "_http._tcp.local.";
+			smartSafety.discoverSafety(service_type);
+			
+		// create channel
 			ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50061).usePlaintext().build();
 
 			//stubs -- generate from proto
 			blockingStub = smartSafetyGrpc.newBlockingStub(channel);
-			asyncStub = smartSafetyGrpc.newStub(channel);
+			//asyncStub = smartSafetyGrpc.newStub(channel);
 
 			// Unary RPC call
 			smartLock();
@@ -60,6 +76,67 @@ public class smartSafetyClient {
 			lightRequest req = lightRequest.newBuilder().setLightOn("Hello light").build();
 			lightResponse response = blockingStub.smartLight(req);
 			System.out.println(response.getLightOff());
+			
+		}
+		
+		private void discoverSafety(String service_type) {
+			
+			
+			try {
+				// Create a JmDNS instance
+				JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
+
+					
+				jmdns.addServiceListener(service_type, new ServiceListener() {
+					
+					@Override
+					public void serviceResolved(ServiceEvent event) {
+						System.out.println("Math Service resolved: " + event.getInfo());
+
+						smartSafetyInfo = event.getInfo();
+
+						int port = smartSafetyInfo.getPort();
+						
+						System.out.println("resolving " + service_type + " with properties ...");
+						System.out.println("\t port: " + port);
+						System.out.println("\t type:"+ event.getType());
+						System.out.println("\t name: " + event.getName());
+						System.out.println("\t description/properties: " + smartSafetyInfo.getNiceTextString());
+						//System.out.println("\t host: " + smartSafetyInfo.getHostAddresses()[0]);
+					
+						
+					}
+		
+					
+					@Override
+					public void serviceRemoved(ServiceEvent event) {
+						System.out.println("Service removed: " + event.getInfo());
+
+						
+					}
+					
+					@Override
+					public void serviceAdded(ServiceEvent event) {
+						System.out.println("Service added: " + event.getInfo());
+
+						
+					}
+				});
+				
+				// Wait a bit
+				Thread.sleep(2000);
+				
+				jmdns.close();
+
+			} catch (UnknownHostException e) {
+				System.out.println(e.getMessage());
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			
 		}
 		

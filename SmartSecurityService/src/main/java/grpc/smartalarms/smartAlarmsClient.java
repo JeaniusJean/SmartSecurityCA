@@ -1,12 +1,19 @@
 package grpc.smartalarms;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceEvent;
+import javax.jmdns.ServiceInfo;
+import javax.jmdns.ServiceListener;
 
-import grpc.smartsafety.smartSafetyClient;
+
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
@@ -16,19 +23,26 @@ public class smartAlarmsClient {
 	
 	private static  Logger logger = Logger.getLogger(smartAlarmsClient.class.getName());
 	
-	private static smartAlarmsGrpc.smartAlarmsBlockingStub blockingStub;
+
 	private static smartAlarmsGrpc.smartAlarmsStub asyncStub;
+	private ServiceInfo smartAlarmsInfo;
 	
 	public static void main(String[] args) throws InterruptedException{
+		
+					// Discover the jmDNS service
+					smartAlarmsClient smartAlarms = new smartAlarmsClient();
+					String service_type = "_http._tcp.local.";
+					smartAlarms.discoverAlarms(service_type);
+					
 	ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50062).usePlaintext().build();
 	
-	blockingStub = smartAlarmsGrpc.newBlockingStub(channel);
+	
 	asyncStub = smartAlarmsGrpc.newStub(channel);
 	
 	
 	alarmSystem();
 	smokeAlarm();
-	//smokeAlarmBlocking();
+
 	
 	
 	channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
@@ -37,7 +51,8 @@ public class smartAlarmsClient {
 	}
 	
 
-	
+
+
 	private static void alarmSystem(){
 		StreamObserver<sensorResponse> responseObserver = new StreamObserver<sensorResponse>(){
 			
@@ -88,11 +103,10 @@ public class smartAlarmsClient {
 
 
 		
-		
-			
 	
-	// server stream
-	// rpc smokeAlarm (smokeRequest) returns (stream smokeResponse) {}
+	
+	// server stream using Asnyc stub
+
 	private static void smokeAlarm() {
 		smokeRequest request = smokeRequest.newBuilder().setSmoke("message 1 - introduction").build();
 		
@@ -129,30 +143,76 @@ public class smartAlarmsClient {
 		}
 		
 		}
+
 	
+	private void discoverAlarms(String service_type) {
+	
+		try {
+			// Create a JmDNS instance
+			JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
 
-	/*blocking server-streaming
-	public static void smokeAlarmBlocking() {
-		smokeRequest request = smokeRequest.newBuilder().setSmoke("message 1 - introduction").build();
-		// as this call is blocking. The client will not proceed until all the messages in stream has been received. 
-				try {
-					// Iterating each message in response when calling remote split RPC method.
-					Iterator<smokeResponse> responces = blockingStub.smokeAlarm(request);
+				
+			jmdns.addServiceListener(service_type, new ServiceListener() {
+				
+				@Override
+				public void serviceResolved(ServiceEvent event) {
+					System.out.println("Service resolved: " + event.getInfo());
+
+					smartAlarmsInfo = event.getInfo();
+
+					int port = smartAlarmsInfo.getPort();
 					
-					// Client keeps a check on the next message in stream.
-					while(responces.hasNext()) {
-						smokeResponse temp = responces.next();
-						System.out.println(temp.getLongtitude() + temp.getLongtitude());
-					}
+					System.out.println("resolving " + service_type + " with properties ...");
+					System.out.println("\t port: " + port);
+					System.out.println("\t type:"+ event.getType());
+					System.out.println("\t name: " + event.getName());
+					System.out.println("\t description/properties: " + smartAlarmsInfo.getNiceTextString());
+					//System.out.println("\t host: " + smartAlarmsInfo.getHostAddresses()[0]);
+				
+					
+				}
+	
+				
+				@Override
+				public void serviceRemoved(ServiceEvent event) {
+					System.out.println("Service removed: " + event.getInfo());
 
-				} catch (StatusRuntimeException e) {
-					e.printStackTrace();
+					
 				}
 				
-			}
-			*/
+				@Override
+				public void serviceAdded(ServiceEvent event) {
+					System.out.println("Service added: " + event.getInfo());
+
+					
+				}
+			});
+			
+			// Wait a bit
+			Thread.sleep(2000);
+			
+			jmdns.close();
+
+		} catch (UnknownHostException e) {
+			System.out.println(e.getMessage());
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-	}
+		
+	 }
+}
+
+	
+
+
+
+
+		
+	
 		
 	
 	

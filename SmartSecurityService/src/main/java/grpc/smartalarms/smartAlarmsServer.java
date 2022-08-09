@@ -4,7 +4,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Logger;
 
-
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
 
 import grpc.smartalarms.smartAlarmsGrpc.smartAlarmsImplBase;
 import io.grpc.Server;
@@ -28,6 +29,7 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 		
 		
 		smartAlarmsServer service = new smartAlarmsServer();
+		service.registerService();
 		
 		 int port = 50062;
 
@@ -49,6 +51,40 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 }	
 
 		
+	private void registerService() {
+		try {
+            // Create a JmDNS instance
+            JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
+            
+            String service_type = "_smartAlarmsServer._tcp.local.";
+            String service_name = "smart Alarms Server";
+            int service_port = 50062;
+            String service_description = "Perform safety operations";
+            
+            // Register a service
+            ServiceInfo serviceInfo = ServiceInfo.create(service_type, service_name, service_port, service_description);
+            jmdns.registerService(serviceInfo);
+            
+            System.out.printf("registering service with type %s and name %s \n", service_type, service_name);
+            
+            // Wait a bit
+            Thread.sleep(1000);
+
+            // Unregister all services
+            //jmdns.unregisterAllServices();
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        } catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+   
+}
+		
+	
+
+
 	@Override
 	public void smokeAlarm(smokeRequest request, StreamObserver<smokeResponse> responseObserver) {
 		// TODO Auto-generated method stub
@@ -76,13 +112,12 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 			
 			int length = 0;
 			
-			// For each message in the stream, get one stream at a time.
-			// NOTE: YOU MAY MODIFY THE LOGIC OF onNext, onError, onCompleted BASED ON YOUR PROJECT.
+			
 			@Override
 			public void onNext(sensorRequest value) {
-				// Here, in this example we compute the value of string length for each message in the stream. 
+				
 				System.out.println("receive -> " + value.getSensor());
-				// Keep on adding all the length values to compute the total length of strings sent by the client in the stream 
+				
 				length += value.getSensor().length();
 				
 			}
@@ -93,11 +128,10 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 				
 			}
 
-			// Once the complete stream is received this logic will be executed.
+			
 			@Override
 			public void onCompleted() {
-				// Preparing and sending the reply for the client. Here, response is build and with the value (length) computed by above logic.
-				 // Here, response is sent once the client is done with sending the stream.
+				
 				sensorResponse res = sensorResponse.newBuilder().build();
 		          responseObserver.onNext(res);
 		          responseObserver.onCompleted();
