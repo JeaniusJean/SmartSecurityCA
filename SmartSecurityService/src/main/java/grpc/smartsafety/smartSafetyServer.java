@@ -1,7 +1,15 @@
 package grpc.smartsafety;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.util.Properties;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
+import javax.jmdns.ServiceEvent;
+import javax.jmdns.ServiceListener;
 import grpc.smartsafety.smartSafetyGrpc.smartSafetyImplBase;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -13,12 +21,46 @@ public class smartSafetyServer {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		// TODO Auto-generated method stub
-		
+		JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
 		smartSafetyServer service = new smartSafetyServer();
+		
+		service.registerService();
+		
 		service.start();
 
 	}
 	
+	public void registerService() {
+		 try {
+	            // Create a JmDNS instance
+	            JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
+	            
+	            String service_type = "_http._tcp.local.";
+	            String service_name = "smart Safety Server";
+	            int service_port = 50061;
+	            String service_description = "Perform safety operations";
+	            
+	            // Register a service
+	            ServiceInfo serviceInfo = ServiceInfo.create(service_type, service_name, service_port, service_description);
+	            jmdns.registerService(serviceInfo);
+	            
+	            System.out.printf("registrering service with type %s and name %s \n", service_type, service_name);
+	            
+	            // Wait a bit
+	            Thread.sleep(1000);
+
+	            // Unregister all services
+	            //jmdns.unregisterAllServices();
+
+	        } catch (IOException e) {
+	            System.out.println(e.getMessage());
+	        } catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	   
+	}
+
 	private void start() throws IOException, InterruptedException {
 		System.out.println("Starting new GRPC server");
 		
@@ -58,6 +100,9 @@ public class smartSafetyServer {
 			responseObserver.onNext(responseBuilder.build());
 			responseObserver.onCompleted();				
 		}
+		
+	
+		
 		
 	}
 	

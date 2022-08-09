@@ -1,6 +1,9 @@
 package grpc.smartalarms;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.logging.Logger;
+
 
 
 import grpc.smartalarms.smartAlarmsGrpc.smartAlarmsImplBase;
@@ -23,11 +26,11 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
 		
+		
 		smartAlarmsServer service = new smartAlarmsServer();
 		
 		 int port = 50062;
-		    
-		   
+
 
 		    Server server = ServerBuilder.forPort(port) // Port is defined in line 34
 		        .addService(service) // Service is defined in line 31
@@ -39,9 +42,13 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 		    		    
 		    // Server will be running until externally terminated.
 		    server.awaitTermination();
+		    
+		    
 		
 
 }	
+
+		
 	@Override
 	public void smokeAlarm(smokeRequest request, StreamObserver<smokeResponse> responseObserver) {
 		// TODO Auto-generated method stub
@@ -101,6 +108,8 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 			
 		};
 	}
+	
+	
 
 	
 	}
