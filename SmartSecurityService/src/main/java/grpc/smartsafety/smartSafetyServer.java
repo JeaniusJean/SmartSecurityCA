@@ -4,19 +4,22 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
-
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 
+import grpc.smartcameras.smartCameraServer;
 import grpc.smartsafety.smartSafetyGrpc.smartSafetyImplBase;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 
-public class smartSafetyServer {
+public class smartSafetyServer extends smartSafetyImplBase{
 	
 	private Server server;
+	private static final Logger logger = Logger.getLogger(smartSafetyServer.class.getName());
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
@@ -53,7 +56,7 @@ public class smartSafetyServer {
 	        } catch (IOException e) {
 	            System.out.println(e.getMessage());
 	        } catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 	   
@@ -64,14 +67,23 @@ public class smartSafetyServer {
 		
 		int port = 50061;
 		//smartSafety
-		server = ServerBuilder.forPort(port).addService(new SmartSafetyImpl()).build().start();
+		server = ServerBuilder.forPort(port).addService(new smartSafetyServer()).build().start();
+		 logger.info("Server started, listening on " + port);
+
 		
-		System.out.println("Server running on port: " + port);
-		
-		server.awaitTermination();
-	}
-	
-	static class SmartSafetyImpl extends smartSafetyImplBase{
+		// Server will be running until externally terminated.
+		 //time out cancellation handling error
+	    Runtime.getRuntime().addShutdownHook(new Thread() {
+	    	@Override public void run() 
+	    	{ System.err.println("Shutting down gRPC server"); 
+	    	try { server.shutdown().awaitTermination(30,TimeUnit.SECONDS); 
+	    	} catch (InterruptedException e) { e.printStackTrace(System.err); 
+	    	} 
+	    	} 
+	    	}); 
+	    }
+	   	
+
 		
 		@Override
 		public void smartLock(lockRequest request, StreamObserver<lockResponse> responseObserver)
@@ -82,7 +94,8 @@ public class smartSafetyServer {
 			//return service or response
 			lockResponse.Builder responseBuilder = lockResponse.newBuilder();
 			responseBuilder.setUnlock(lock);
-			
+            	
+           
 			responseObserver.onNext(responseBuilder.build());
 			responseObserver.onCompleted();	
 			
@@ -105,4 +118,4 @@ public class smartSafetyServer {
 	}
 	
 
-}
+

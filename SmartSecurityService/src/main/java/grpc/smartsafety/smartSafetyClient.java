@@ -23,18 +23,11 @@ import io.grpc.ManagedChannelBuilder;
 
 public class smartSafetyClient {
 
-	
 		// logger to show client side logs in the console
 		private static  Logger logger = Logger.getLogger(smartSafetyClient.class.getName());
-
-
 		// Blocking stub
 		private static smartSafetyGrpc.smartSafetyBlockingStub blockingStub;
-		// Async stub
-		//private static smartSafetyStub asyncStub;
-		
 		private ServiceInfo smartSafetyInfo;
-		
 		
 		public static void main(String[] args) throws InterruptedException{
 			
@@ -63,25 +56,32 @@ public class smartSafetyClient {
 		
 		//unary rpc
 		public static void smartLock() {
-			// First creating a request message. Here, the message contains a string in setVal
-			lockRequest req = lockRequest.newBuilder().setLock("Hello lock").build();
-			//  Calling a remote RPC method using blocking stub defined in main method. req is the message we want to pass.
+			// create a message
+			lockRequest req = lockRequest.newBuilder().setLock("Locked all doors").build();
+			//  Call blocking stub 
 			lockResponse response = blockingStub.smartLock(req);
 
-			//response contains the output from the server side. Here, we are printing the value contained by response. 
+			//print response value
 			System.out.println(response.getUnlock());
+			
+			// setting a deadline
+			response = blockingStub.withDeadlineAfter(100, TimeUnit.MILLISECONDS).smartLock(req);
 		}
 		
+		//unary rpc
 		public static void  smartLight() {
-			lightRequest req = lightRequest.newBuilder().setLightOn("Hello light").build();
+			lightRequest req = lightRequest.newBuilder().setLightOn("Light turned on").build();
 			lightResponse response = blockingStub.smartLight(req);
 			System.out.println(response.getLightOff());
+			// setting a deadline
+			response = blockingStub.withDeadlineAfter(100, TimeUnit.MILLISECONDS).smartLight(req);
 			
 		}
 		
+		
+		// set discovery for server. Install jmdns
 		private void discoverSafety(String service_type) {
-			
-			
+		
 			try {
 				// Create a JmDNS instance
 				JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
@@ -91,7 +91,7 @@ public class smartSafetyClient {
 					
 					@Override
 					public void serviceResolved(ServiceEvent event) {
-						System.out.println("Math Service resolved: " + event.getInfo());
+						System.out.println("Service resolved: " + event.getInfo());
 
 						smartSafetyInfo = event.getInfo();
 
@@ -137,9 +137,5 @@ public class smartSafetyClient {
 				e.printStackTrace();
 			}
 			
-			
 		}
-		
-
-
 }

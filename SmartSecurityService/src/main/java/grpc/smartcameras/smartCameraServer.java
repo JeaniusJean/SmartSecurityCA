@@ -2,6 +2,7 @@ package grpc.smartcameras;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import javax.jmdns.JmDNS;
@@ -30,13 +31,51 @@ public class smartCameraServer extends smartCamerasImplBase{
 			        .start();
 		 
 		 logger.info("Server started, listening on " + port);
-		 server.awaitTermination();
+		// Server will be running until externally terminated.
+		 //  time out cancellation handling error
+		 Runtime.getRuntime().addShutdownHook(new Thread() {
+		    	@Override public void run() 
+		    	{ System.err.println("Shutting down gRPC server"); 
+		    	try { server.shutdown().awaitTermination(30,TimeUnit.SECONDS); 
+		    	} catch (InterruptedException e) { e.printStackTrace(System.err); 
+		    	} 
+		    	} 
+		    	}); 
 	 }
 	 
-	// bi-directional steam
-	  //rpc smartDoorbell (stream ringRequest) returns (stream ringResponse) {}
+		//dicsover service use jmdns
+		private void registerService() {
+			 
+			try {
+	            // Create a JmDNS instance
+	            JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
+	            
+	            String service_type = "_smartCameraServer._tcp.local.";
+	            String service_name = "smart Camera Server";
+	            int service_port = 50063;
+	            String service_description = "Perform camera operations";
+	            
+	            // Register a service
+	            ServiceInfo serviceInfo = ServiceInfo.create(service_type, service_name, service_port, service_description);
+	            jmdns.registerService(serviceInfo);
+	            
+	            System.out.printf("registering service with type %s and name %s \n", service_type, service_name);
+	            
+	            // Wait a bit
+	            Thread.sleep(1000);
+
+	            // Unregister all services
+	            //jmdns.unregisterAllServices();
+
+	        } catch (IOException e) {
+	            System.out.println(e.getMessage());
+	        } catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	  
-	 
+	// bi-directional stream
 	@Override
 	public StreamObserver<ringRequest> smartDoorbell(StreamObserver<ringResponse> responseObserver) {
 		return new StreamObserver<ringRequest>() {
@@ -53,7 +92,7 @@ public class smartCameraServer extends smartCamerasImplBase{
 
 		@Override
 		public void onError(Throwable t) {
-			// TODO Auto-generated method stub
+			logger.info("Error while reading Smart Camera Stream:" + t);
 		}
 
 		@Override
@@ -65,37 +104,9 @@ public class smartCameraServer extends smartCamerasImplBase{
 		
 	}
 	
-	private void registerService() {
-		 
-		try {
-            // Create a JmDNS instance
-            JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
-            
-            String service_type = "_smartCameraServer._tcp.local.";
-            String service_name = "smart Camera Server";
-            int service_port = 50063;
-            String service_description = "Perform camera operations";
-            
-            // Register a service
-            ServiceInfo serviceInfo = ServiceInfo.create(service_type, service_name, service_port, service_description);
-            jmdns.registerService(serviceInfo);
-            
-            System.out.printf("registering service with type %s and name %s \n", service_type, service_name);
-            
-            // Wait a bit
-            Thread.sleep(1000);
 
-            // Unregister all services
-            //jmdns.unregisterAllServices();
-
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        } catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
+	// bi-directional stream
 	@Override
 	public StreamObserver<videoRequest> iPCamera(StreamObserver<videoResponse> responseObserver) {
 		return new StreamObserver<videoRequest>() {
@@ -113,7 +124,7 @@ public class smartCameraServer extends smartCamerasImplBase{
 
 			@Override
 			public void onError(Throwable t) {
-				// TODO Auto-generated method stub
+				logger.info("Error while Smart Camera Stream:" + t);
 				
 			}
 
@@ -126,9 +137,6 @@ public class smartCameraServer extends smartCamerasImplBase{
 		};
 		
 	}
-	
-  
-
 
 }
 		 

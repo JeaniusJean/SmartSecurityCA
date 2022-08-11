@@ -42,14 +42,15 @@ public class smartCamerasClient {
 			//stubs -- generate from proto
 			//blockingStub = smartCamerasGrpc.newBlockingStub(channel);
 			asyncStub = smartCamerasGrpc.newStub(channel);
-
 			
 			//call rpc method
 			smartDoorbell();
 			IPCamera();
 
 			// Closing the channel once message has been passed.		
+			System.out.println("shutting down");
 			channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+			
 
 		}
 
@@ -118,7 +119,7 @@ public class smartCamerasClient {
 			@Override
 			public void onNext(ringResponse value) {
 
-				System.out.println("revered received is " + value.getRespond());
+				System.out.println("reversed received is " + value.getRespond());
 
 			}
 			
