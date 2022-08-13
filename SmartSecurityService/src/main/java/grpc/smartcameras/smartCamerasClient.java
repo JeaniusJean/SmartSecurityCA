@@ -13,7 +13,7 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
-
+import io.grpc.Grpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.ManagedChannel;
@@ -36,11 +36,13 @@ public class smartCamerasClient {
 			String service_type = "_http._tcp.local.";
 			smartCamera.discoverCameras(service_type);
 			
+			
+			// Create a default SSL ChannelCredentials object
+			ServerCredentials creds = TlsServerCredentials.create(certChainFile, privateKeyFile);
 			//create channel from server to channel
 			ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50063).usePlaintext().build();
-
-			//stubs -- generate from proto
-			//blockingStub = smartCamerasGrpc.newBlockingStub(channel);
+	
+			//stubs
 			asyncStub = smartCamerasGrpc.newStub(channel);
 			
 			//call rpc method

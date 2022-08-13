@@ -24,9 +24,7 @@ public class smartSafetyServer extends smartSafetyImplBase{
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
 		smartSafetyServer service = new smartSafetyServer();
-		
 		service.registerService();
-		
 		service.start();
 
 	}

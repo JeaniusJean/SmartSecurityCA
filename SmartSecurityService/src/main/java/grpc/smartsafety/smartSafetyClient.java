@@ -36,7 +36,7 @@ public class smartSafetyClient {
 			String service_type = "_http._tcp.local.";
 			smartSafety.discoverSafety(service_type);
 			
-		// create channel
+			// create channel
 			ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50061).usePlaintext().build();
 
 			//stubs -- generate from proto
@@ -46,7 +46,6 @@ public class smartSafetyClient {
 			// Unary RPC call
 			smartLock();
 			smartLight();
-			
 
 			// Closing the channel once message has been passed.
 			System.out.println("shutting down");

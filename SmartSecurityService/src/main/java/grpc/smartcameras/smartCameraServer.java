@@ -22,7 +22,7 @@ public class smartCameraServer extends smartCamerasImplBase{
 		 
 		 smartCameraServer smartcameraserver = new smartCameraServer();
 		 smartcameraserver.registerService();
-		 
+		//create channel from server to channel
 		 int port = 50063;
 		 
 		 Server server = ServerBuilder.forPort(port) 
@@ -115,7 +115,7 @@ public class smartCameraServer extends smartCamerasImplBase{
 				StringBuilder input1 = new StringBuilder(); 
 				 input1.append(request.getVideo()); 
 		         input1 = input1.reverse();
-		      // Preparing and sending the reply for the client. Here, response is build and with the value (input1.toString()) computed by above logic.
+		      // Preparing and sending the reply for the client.
 		            videoResponse reply = videoResponse.newBuilder().setWatchVideo(input1.toString()).build();
 		      
 		            responseObserver.onNext(reply);
