@@ -197,6 +197,8 @@ public final class smartAlarmsGrpc {
       return asyncClientStreamingCall(
           getChannel().newCall(getAlarmSystemMethod(), getCallOptions()), responseObserver);
     }
+
+	
   }
 
   /**

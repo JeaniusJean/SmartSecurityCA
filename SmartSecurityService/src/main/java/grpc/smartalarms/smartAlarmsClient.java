@@ -19,6 +19,7 @@ import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ClientCall;
 import io.grpc.ClientInterceptor;
+import io.grpc.Context;
 import io.grpc.ForwardingClientCall;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -30,6 +31,7 @@ public class smartAlarmsClient {
 
 	private static Logger logger = Logger.getLogger(smartAlarmsClient.class.getName());
 	private static smartAlarmsGrpc.smartAlarmsStub asyncStub;
+	private static smartAlarmsGrpc.smartAlarmsStub blockingStub;
 	private ServiceInfo smartAlarmsInfo;
 
 	//// client sends meta data
@@ -59,13 +61,15 @@ public class smartAlarmsClient {
 		ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50062).usePlaintext().build();
 
 		asyncStub = smartAlarmsGrpc.newStub(channel);
+		blockingStub = smartAlarmsGrpc.newStub(channel);
 
 		alarmSystem();
 		smokeAlarm();
 
 		channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
 	}
-
+	
+	//discover service
 	private void discoverAlarms(String service_type) {
 
 		try {
@@ -87,7 +91,7 @@ public class smartAlarmsClient {
 					System.out.println("\t type:" + event.getType());
 					System.out.println("\t name: " + event.getName());
 					System.out.println("\t description/properties: " + smartAlarmsInfo.getNiceTextString());
-					// System.out.println("\t host: " + smartAlarmsInfo.getHostAddresses()[0]);
+		
 
 				}
 
@@ -103,8 +107,6 @@ public class smartAlarmsClient {
 
 				}
 			});
-
-			// Wait a bit
 			Thread.sleep(2000);
 
 			jmdns.close();
@@ -154,7 +156,6 @@ public class smartAlarmsClient {
 			// Mark the end of requests
 			requestObserver.onCompleted();
 
-			// Sleep for a bit before sending the next one.
 			Thread.sleep(new Random().nextInt(1000) + 500);
 
 		} catch (RuntimeException e) {
@@ -196,10 +197,21 @@ public class smartAlarmsClient {
 		try {
 			Thread.sleep(30000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+	}
+	
+	public class Constants {
+	    public static final String JWT_SIGNING_KEY = "L8hHXsaQOUjk5rg7XPGv4eL36anlCrkMz8CJ0i/8E/0=";
+	    public static final String BEARER_TYPE = "Bearer";
+
+	    public final Metadata.Key<String> AUTHORIZATION_METADATA_KEY = Metadata.Key.of("Authorization", ASCII_STRING_MARSHALLER);
+	    public final Context.Key<String> CLIENT_ID_CONTEXT_KEY = Context.key("clientId");
+
+	    private Constants() {
+	        throw new AssertionError();
+	    }
 	}
 
 }

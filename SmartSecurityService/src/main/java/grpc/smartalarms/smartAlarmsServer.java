@@ -8,8 +8,10 @@ import java.util.logging.Logger;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 
-import grpc.smartalarms.smartAlarmsGrpc.smartAlarmsImplBase;
+import static io.grpc.Metadata.ASCII_STRING_MARSHALLER;
 
+import grpc.smartalarms.smartAlarmsGrpc.smartAlarmsImplBase;
+import io.grpc.Context;
 import io.grpc.Metadata;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -17,6 +19,7 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCall.Listener;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
 public class smartAlarmsServer extends smartAlarmsImplBase {
@@ -40,10 +43,10 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 
 		int port = 50062;
 
-		Server server = ServerBuilder.forPort(port) // Port is defined in line 34
-				.addService(service) // Service is defined in line 31
-				.build() // Build the server
-				.start(); // Start the server and keep it running for clients to contact.
+		Server server = ServerBuilder.forPort(port) 
+				.addService(service)
+				.build() 
+				.start();
 
 		// Giving a logging information on the server console that server has started
 
@@ -79,11 +82,9 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 
 			System.out.printf("registering service with type %s and name %s \n", service_type, service_name);
 
-			// Wait a bit
 			Thread.sleep(1000);
 
 			// Unregister all services
-			// jmdns.unregisterAllServices();
 
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
@@ -96,11 +97,17 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 
 	@Override
 	public void smokeAlarm(smokeRequest request, StreamObserver<smokeResponse> responseObserver) {
-		// TODO Auto-generated method stub
+		
 		super.smokeAlarm(request, responseObserver);
-
+		
 		System.out.println("receiving smokeAlarm");
 		int length = request.getSmoke().length();
+		
+		if(length < 0){
+            Status status = Status.FAILED_PRECONDITION.withDescription("Not less than 0");
+            responseObserver.onError(status.asRuntimeException());
+            return;
+        }
 
 		// preparing the response message
 		smokeResponse reply = smokeResponse.newBuilder().setLatitude(length).setLongtitude(length).build();
@@ -142,5 +149,18 @@ public class smartAlarmsServer extends smartAlarmsImplBase {
 
 		};
 	}
+	
+	public class Constants {
+	    public static final String JWT_SIGNING_KEY = "L8hHXsaQOUjk5rg7XPGv4eL36anlCrkMz8CJ0i/8E/0=";
+	    public static final String BEARER_TYPE = "Bearer";
+
+	    public final Metadata.Key<String> AUTHORIZATION_METADATA_KEY = Metadata.Key.of("Authorization", ASCII_STRING_MARSHALLER);
+	    public final Context.Key<String> CLIENT_ID_CONTEXT_KEY = Context.key("clientId");
+
+	    private Constants() {
+	        throw new AssertionError();
+	    }
+	}
 
 }
+

@@ -39,9 +39,8 @@ public class smartSafetyClient {
 			// create channel
 			ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50061).usePlaintext().build();
 
-			//stubs -- generate from proto
+			//stubs
 			blockingStub = smartSafetyGrpc.newBlockingStub(channel);
-			//asyncStub = smartSafetyGrpc.newStub(channel);
 
 			// Unary RPC call
 			smartLock();

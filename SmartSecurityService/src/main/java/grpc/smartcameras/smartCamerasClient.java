@@ -6,26 +6,17 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
-import io.grpc.Grpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 public class smartCamerasClient {
 
-		private static  Logger logger = Logger.getLogger(smartCamerasClient.class.getName());
-		//private static smartCamerasGrpc.smartCamerasBlockingStub blockingStub;
 		private static smartCamerasGrpc.smartCamerasStub asyncStub;
 		private ServiceInfo smartCamerasInfo;
 		
@@ -36,9 +27,6 @@ public class smartCamerasClient {
 			String service_type = "_http._tcp.local.";
 			smartCamera.discoverCameras(service_type);
 			
-			
-			// Create a default SSL ChannelCredentials object
-			ServerCredentials creds = TlsServerCredentials.create(certChainFile, privateKeyFile);
 			//create channel from server to channel
 			ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50063).usePlaintext().build();
 	
@@ -97,8 +85,7 @@ public class smartCamerasClient {
 						
 					}
 				});
-				
-				// Wait a bit
+
 				Thread.sleep(2000);
 				
 				jmdns.close();
@@ -108,7 +95,6 @@ public class smartCamerasClient {
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -219,11 +205,7 @@ public class smartCamerasClient {
 			}
 
 
-		}
-		
-		
-				
-			
+		}	
 }
 
 		

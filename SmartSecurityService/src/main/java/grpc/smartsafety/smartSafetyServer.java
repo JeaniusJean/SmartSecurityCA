@@ -1,8 +1,8 @@
 package grpc.smartsafety;
 
-import java.io.FileInputStream;
+
 import java.io.IOException;
-import java.io.InputStream;
+
 import java.net.InetAddress;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 
-import grpc.smartcameras.smartCameraServer;
 import grpc.smartsafety.smartSafetyGrpc.smartSafetyImplBase;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -29,6 +28,7 @@ public class smartSafetyServer extends smartSafetyImplBase{
 
 	}
 	
+	//Register service withJMDNS
 	public void registerService() {
 		 try {
 	            // Create a JmDNS instance
@@ -45,7 +45,6 @@ public class smartSafetyServer extends smartSafetyImplBase{
 	            
 	            System.out.printf("registering service with type %s and name %s \n", service_type, service_name);
 	            
-	            // Wait a bit
 	            Thread.sleep(1000);
 
 	            // Unregister all services
@@ -64,7 +63,7 @@ public class smartSafetyServer extends smartSafetyImplBase{
 		System.out.println("Starting new GRPC server");
 		
 		int port = 50061;
-		//smartSafety
+		//adding smartSafety to server
 		server = ServerBuilder.forPort(port).addService(new smartSafetyServer()).build().start();
 		 logger.info("Server started, listening on " + port);
 
@@ -82,7 +81,7 @@ public class smartSafetyServer extends smartSafetyImplBase{
 	    }
 	   	
 
-		
+		//smart lock RPC
 		@Override
 		public void smartLock(lockRequest request, StreamObserver<lockResponse> responseObserver)
 		{
@@ -92,13 +91,14 @@ public class smartSafetyServer extends smartSafetyImplBase{
 			//return service or response
 			lockResponse.Builder responseBuilder = lockResponse.newBuilder();
 			responseBuilder.setUnlock(lock);
-            	
-           
+         
 			responseObserver.onNext(responseBuilder.build());
 			responseObserver.onCompleted();	
 			
 		}
 		
+		//smart light RPC
+		@Override
 		public void smartLight(lightRequest request, StreamObserver<lightResponse> responseObserver) {
 			String lightOn = request.getLightOn();
 			System.out.println("light on is " + lightOn);
@@ -109,9 +109,7 @@ public class smartSafetyServer extends smartSafetyImplBase{
 			responseObserver.onNext(responseBuilder.build());
 			responseObserver.onCompleted();				
 		}
-		
-	
-		
+			
 		
 	}
 	

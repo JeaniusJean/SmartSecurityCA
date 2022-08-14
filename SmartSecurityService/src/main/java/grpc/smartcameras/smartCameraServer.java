@@ -2,6 +2,7 @@ package grpc.smartcameras;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -11,6 +12,8 @@ import javax.jmdns.ServiceInfo;
 import grpc.smartcameras.smartCamerasGrpc.smartCamerasImplBase;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 public class smartCameraServer extends smartCamerasImplBase{
@@ -60,8 +63,7 @@ public class smartCameraServer extends smartCamerasImplBase{
 	            jmdns.registerService(serviceInfo);
 	            
 	            System.out.printf("registering service with type %s and name %s \n", service_type, service_name);
-	            
-	            // Wait a bit
+	     
 	            Thread.sleep(1000);
 
 	            // Unregister all services
@@ -70,7 +72,6 @@ public class smartCameraServer extends smartCamerasImplBase{
 	        } catch (IOException e) {
 	            System.out.println(e.getMessage());
 	        } catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -84,7 +85,7 @@ public class smartCameraServer extends smartCamerasImplBase{
 			StringBuilder input1 = new StringBuilder(); 
 			 input1.append(request.getRing()); 
 	         input1 = input1.reverse();
-	      // Preparing and sending the reply for the client. Here, response is build and with the value (input1.toString()) computed by above logic.
+
 	            ringResponse reply = ringResponse.newBuilder().setRespond(input1.toString()).build();
 	      
 	            responseObserver.onNext(reply);
@@ -134,11 +135,27 @@ public class smartCameraServer extends smartCamerasImplBase{
 				
 			}
 			
+			  private StatusRuntimeException handleException(Throwable t) {
+				    if (t instanceof CompletionException) {
+				      return handleException(t.getCause());
+				    }
+
+				    if (t instanceof StatusRuntimeException) {
+				     StatusRuntimeException statusException = (StatusRuntimeException) t;
+				      return statusException;
+				    }
+
+				    return Status.UNKNOWN.withDescription(t.getMessage()).asRuntimeException();
+				  }
+			  };
+			
 		};
+		
+		
 		
 	}
 
-}
+
 		 
 		
 
