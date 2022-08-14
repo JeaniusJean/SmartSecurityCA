@@ -27,7 +27,7 @@ public class smartSafetyClient {
 		private static  Logger logger = Logger.getLogger(smartSafetyClient.class.getName());
 		// Blocking stub
 		private static smartSafetyGrpc.smartSafetyBlockingStub blockingStub;
-		private ServiceInfo smartSafetyInfo;
+		private ServiceInfo smartSafetyInfo; 	//register services for automatic discovery.
 		
 		public static void main(String[] args) throws InterruptedException{
 			
@@ -90,7 +90,7 @@ public class smartSafetyClient {
 					@Override
 					public void serviceResolved(ServiceEvent event) {
 						System.out.println("Service resolved: " + event.getInfo());
-
+					
 						smartSafetyInfo = event.getInfo();
 
 						int port = smartSafetyInfo.getPort();
